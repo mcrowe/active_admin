@@ -42,8 +42,8 @@ module ActiveAdmin
         unless collection.respond_to?(:num_pages)
           raise(StandardError, "Collection is not a paginated scope. Set collection.page(params[:page]).per(10) before calling :paginated_collection.")
         end
-        
-      
+
+
         @contents = div(:class => "paginated_collection_contents")
         build_pagination_with_formats(options)
         @built = true
@@ -81,7 +81,7 @@ module ActiveAdmin
           link_to format.to_s.upcase, { :format => format}.merge(request.query_parameters.except(:commit, :format))
         end
         div :class => "download_links" do
-		  text_node [I18n.t('active_admin.download'), links].flatten.join("&nbsp;").html_safe
+      text_node [I18n.t('active_admin.download'), links].flatten.join("&nbsp;").html_safe
         end
       end
 
@@ -110,9 +110,11 @@ module ActiveAdmin
           else;   I18n.t('active_admin.pagination.one_page', :model => entries_name, :n => collection.total_count)
           end
         else
-          offset = collection.current_page * collection.size
-          total  = collection.total_count
-          I18n.t('active_admin.pagination.multiple', :model => entries_name, :from => (offset - collection.size + 1), :to => offset > total ? total : offset, :total => total)
+          size = collection.size
+          size = size.size if size.kind_of? Hash # when GROUP BY is used, AR returns Hash instead of Fixnum for .size
+          offset = (collection.current_page - 1) * collection.limit_value
+          total = collection.total_count
+          I18n.t('active_admin.pagination.multiple', :model => entries_name, :from => offset + 1, :to => offset + size, :total => total)
         end
       end
 
