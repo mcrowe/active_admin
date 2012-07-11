@@ -89,7 +89,6 @@ module ActiveAdmin
     def prepare!
       remove_active_admin_load_paths_from_rails_autoload_and_eager_load
       attach_reloader
-      generate_stylesheets
     end
 
     # Registers a brand new configuration for the given resource.
@@ -254,20 +253,5 @@ module ActiveAdmin
       ActiveAdmin::Reloader.build(Rails.application, self, Rails.version).attach!
     end
 
-    def generate_stylesheets
-      # This must be required after initialization
-      require 'sass/plugin'
-      require 'active_admin/sass/helpers'
-
-      # Create our own asset pipeline in Rails 3.0
-      if ActiveAdmin.use_asset_pipeline?
-        # Add our mixins to the load path for SASS
-        ::Sass::Engine::DEFAULT_OPTIONS[:load_paths] <<  File.expand_path("../../../app/assets/stylesheets", __FILE__)
-      else
-        require 'active_admin/sass/css_loader'
-        ::Sass::Plugin.add_template_location(File.expand_path("../../../app/assets/stylesheets", __FILE__))
-        ::Sass::Plugin.add_template_location(File.expand_path("../sass", __FILE__))
-      end
-    end
   end
 end
